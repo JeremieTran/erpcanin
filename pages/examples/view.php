@@ -91,14 +91,15 @@ if (isset($_POST["user_id"])) {
                   <p class="text-muted text-center">Service associé</p>
 
                   <ul class="list-group list-group-unbordered mb-3">
-                  <?php
-                  $canDoService = $user_config->CanDoCapabilities($user_config->id);
-                  foreach ($canDoService as $service_name) : ?>
-                      <li class="list-group-item">
-                          <b><?= htmlspecialchars($service_name, ENT_QUOTES, 'UTF-8') ?></b>
-                      </li>
-                  <?php endforeach; ?>
-                  </ul>
+                    <?php
+                    $canDoService = $user_config->CanDoCapabilities($user_config->id);
+                    foreach ($canDoService as $service_name) : ?>
+                        <li class="list-group-item">
+                            <b><?= htmlspecialchars($service_name, ENT_QUOTES, 'UTF-8') ?></b>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+
 
                   <form method='post' action='edit.php'>
                       <input type='hidden' name='user_id' value='<?= $userId ?>'>

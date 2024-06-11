@@ -120,7 +120,7 @@ class User {
         }
     
         return $services;
-    }
+    }    
     
 
     public function updateCapabilities($user_id, $selected_services) {
