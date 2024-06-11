@@ -91,19 +91,15 @@ if (isset($_POST["user_id"])) {
                   <p class="text-muted text-center">Service associé</p>
 
                   <ul class="list-group list-group-unbordered mb-3">
-                      <?php
-                     $canDoService = $user_config->CanDoCapabilities($user_config->id);
-                     foreach ($service_names as $service_name) : ?>
-                     <li class="list-group-item">
-                       <b><?= $service_name ?></b>
-                       <?php if ($canDoService[$service_name]) : ?>
-                         <input type='checkbox' name='<?= $service_name?>'class="float-right" checked>
-                       <?php else : ?>
-                         <input type='checkbox' name='<?= $service_name?>'class="float-right">
-                       <?php endif ; ?>
-                     </li>
-                     <?php endforeach ; ?>
+                  <?php
+                  $canDoService = $user_config->CanDoCapabilities($user_config->id);
+                  foreach ($canDoService as $service_name) : ?>
+                      <li class="list-group-item">
+                          <b><?= htmlspecialchars($service_name, ENT_QUOTES, 'UTF-8') ?></b>
+                      </li>
+                  <?php endforeach; ?>
                   </ul>
+
                   <form method='post' action='edit.php'>
                       <input type='hidden' name='user_id' value='<?= $userId ?>'>
                       <button class="btn btn-primary btn-block">Modifier</button>

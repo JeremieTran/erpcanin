@@ -90,28 +90,38 @@ class User {
     }
 
     public function CanDoCapabilities($user_id) {
-        $verif = $this->connexion->getPDO()->query("SELECT service_id FROM capabilities WHERE user_id = $user_id;");
-        if ($verif) {
-            $services = [
-                'toilettage' => false,
-                'découpage' => false,
-                'vaccination' => false,
-                'shampoing' => false,
-            ];
-            while ($row = $verif->fetch(PDO::FETCH_ASSOC)) {
-                $service_id = $row['service_id'];
-                $get_name_service = $this->connexion->getPDO()->query("SELECT name FROM services WHERE id = $service_id;");
-                if ($get_name_service) {
-                    $service_name_row = $get_name_service->fetch(PDO::FETCH_ASSOC);
-                    $service_name = $service_name_row['name'];
-                    if (isset($services[$service_name])) {
-                        $services[$service_name] = true;
+        $services = [];
+    
+        try {
+            // Préparer et exécuter la requête pour récupérer les capacités de l'utilisateur
+            $stmt = $this->connexion->getPDO()->prepare("SELECT service_id FROM capabilities WHERE user_id = :user_id");
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Vérifier si des capacités ont été trouvées
+            if ($stmt->rowCount() > 0) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $service_id = $row['service_id'];
+    
+                    // Préparer et exécuter la requête pour obtenir le nom du service
+                    $stmt_service = $this->connexion->getPDO()->prepare("SELECT name FROM services WHERE id = :service_id");
+                    $stmt_service->bindParam(':service_id', $service_id, PDO::PARAM_INT);
+                    $stmt_service->execute();
+    
+                    if ($stmt_service->rowCount() == 1) {
+                        $service_name_row = $stmt_service->fetch(PDO::FETCH_ASSOC);
+                        $service_name = $service_name_row['name'];
+                        $services[] = $service_name;
                     }
                 }
             }
+        } catch (PDOException $e) {
+            echo "Erreur : " . $e->getMessage();
         }
-        return ($services);
+    
+        return $services;
     }
+    
 
     public function updateCapabilities($user_id, $selected_services) {
         // // Supprimez d'abord toutes les entrées existantes pour cet utilisateur
