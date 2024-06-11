@@ -1,17 +1,29 @@
 <?php
+session_start();
 require_once('../../dist/php/connectionclass.php');
 require_once('../../dist/php/userclass.php');
 
+// Vérifiez si l'utilisateur est connecté
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit();
+}
+
 $user_instance = new User();
+$nomUtilisateur = $_SESSION["username"];
+
+// Vérifiez si l'utilisateur est administrateur
+if (!$user_instance->isAdmin($nomUtilisateur)) {
+    echo "Accès refusé. Vous n'avez pas les droits nécessaires pour accéder à cette page.";
+    exit();
+}
+
 $user = $user_instance->getAll();
 
-
 if (isset($_POST["Delete"])) {
-  $user_instance->deleteUser($_POST["user_id"]);
-  header("Location: projects.php");
+    $user_instance->deleteUser($_POST["user_id"]);
+    header("Location: projects.php");
 }
-// Le nom d'utilisateur est stocké dans $_SESSION["username"]
-$nomUtilisateur = $_SESSION["username"];
 ?>
 <?php
 // Inclure le fichier des indicateurs

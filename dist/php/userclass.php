@@ -57,6 +57,20 @@ class User {
         }
     }
 
+    public function isAdmin($username) {
+        try {
+            $requete = $this->connexion->getPDO()->prepare("SELECT is_admin FROM users WHERE firstname = :firstname");
+            $requete->bindParam(':firstname', $username);
+            $requete->execute();
+            
+            $result = $requete->fetch(PDO::FETCH_ASSOC);
+            return $result && $result['is_admin'] == 1;
+        } catch (PDOException $e) {
+            echo "Erreur : " . $e->getMessage();
+            return false;
+        }
+    }
+
     public function getAll() {
         $users_result = $this->connexion->getPDO()->query("SELECT * FROM users;");
         $users = [];
